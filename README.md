@@ -58,7 +58,7 @@ let j = %* {
 }
 
 foreach k in 1 .. 5:
-	assert k > 0
+  assert k > 0
 
 foreach k, v in j.pairs:
   echo k, " is a string"
