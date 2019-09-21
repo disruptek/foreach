@@ -46,6 +46,22 @@ foreach k, v in j.pairs of string and string:
   echo v, " is a string"
 ```
 
+and you can use this to validate tuple field order/names:
+
+```nim
+import json
+import foreach
+
+let j = %* {
+  "one": 1,
+  "two": "2",
+}
+
+# Error: loop variable `pair` isn't a `tuple[key: string, value: JsonNode]`
+foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
+  check pair.key is string
+```
+
 and for convenience, these compile to "normal" `for` loops:
 
 ```nim

@@ -152,3 +152,17 @@ when isMainModule:
         foreach k, v in j.pairs of string and string:
           discard
       check t == false
+    test "tuple destructure, okay":
+      var r: seq[string]
+      foreach pair in j.pairs of tuple[key: string; val: JsonNode]:
+        check pair.key is string
+        check pair.val is JsonNode
+        r.add pair.val.getStr
+      check r == @["", "2"]
+    test "tuple destructure, not okay":
+      foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
+        check pair.key is string
+      let t = compiles:
+        foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
+          check pair.key is string
+      check t == false
