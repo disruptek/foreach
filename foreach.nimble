@@ -1,0 +1,5 @@
+version = "1.0.0"
+author = "disruptek"
+description = "A for loop with syntax for typechecking loop variables"
+license = "MIT"
+requires "nim >= 0.20.0"
