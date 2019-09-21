@@ -160,8 +160,6 @@ when isMainModule:
         r.add pair.val.getStr
       check r == @["", "2"]
     test "tuple destructure, not okay":
-      foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
-        check pair.key is string
       let t = compiles:
         foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
           check pair.key is string
