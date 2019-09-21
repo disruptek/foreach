@@ -1,6 +1,6 @@
 # foreach
 
-A sugary `for` loop macro with syntax for typechecking loop variables.
+A sugary `for` loop macro with syntax for typechecking loop variables.  I've found that this syntax is as helpful for documentation as it is for eliminating errors.
 
 ## Example
 
