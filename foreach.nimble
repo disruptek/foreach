@@ -1,4 +1,4 @@
-version = "1.0.1"
+version = "1.0.2"
 author = "disruptek"
 description = "A sugary for loop with syntax for typechecking loop variables"
 license = "MIT"
