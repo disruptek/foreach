@@ -81,6 +81,8 @@ macro forEach*(loop: untyped; body: untyped): untyped =
   # see if it's a `forEach (k, v) in ...` syntax,
   if loop[0] == ident"and":
     error "don't wrap your loop variables in () as that syntax may change"
+  if loop[0].kind == nnkOpenSymChoice:
+    error "this doesn't work with generics"
   # if we aren't using `forEach foo in bar of bif` syntax,
   if loop[0] != ident"of":
     # then just build a normal for loop
@@ -104,6 +106,7 @@ macro forEach*(loop: untyped; body: untyped): untyped =
     result.add newStmtList(control)
 
 when isMainModule:
+  import sequtils
   import json
   import unittest
 
@@ -115,52 +118,55 @@ when isMainModule:
       }
       l = %* [ 1, 2, 3 ]
 
-    test "one variable, no rewrite":
+    test "one variable":
       var r: seq[int]
       foreach k in l.items:
         check k is JsonNode
         r.add k.getInt
       check r == @[1, 2, 3]
-    test "one variable, type is okay":
-      var r: seq[int]
+      r = @[]
       foreach k in l.items of JsonNode:
         check k is JsonNode
         r.add k.getInt
       check r == @[1, 2, 3]
-    test "one variable, type not okay":
       let t = compiles:
         foreach k in l.items of int:
           discard
       check t == false
-
-    test "two variables, no rewrite":
+    test "two variables":
       var r: seq[string]
       foreach k, v in j.pairs:
         check k is string
         check v is JsonNode
         r.add v.getStr
       check r == @["", "2"]
-    test "two variables, types are okay":
-      var r: seq[string]
+      r = @[]
       foreach k, v in j.pairs of string and JsonNode:
         check k is string
         check v is JsonNode
         r.add v.getStr
       check r == @["", "2"]
-    test "two variables, types are not okay":
       let t = compiles:
         foreach k, v in j.pairs of string and string:
           discard
       check t == false
-    test "tuple destructure, okay":
+    test "tuple destructure":
       var r: seq[string]
       foreach pair in j.pairs of tuple[key: string; val: JsonNode]:
         check pair.key is string
         check pair.val is JsonNode
         r.add pair.val.getStr
       check r == @["", "2"]
-    test "tuple destructure, not okay":
       let t = compiles:
         foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
           check pair.key is string
+      check t == false
+    test "generics":
+      let t = compiles:
+        type KeyVal[T] = tuple[key: string; val: T]
+        proc fails[T](iter: seq[KeyVal[T]]; k: string): T =
+          foreach pair in iter.items of KeyVal[T]:
+            if pair.key == k:
+              return pair.val
+        check fails(toSeq j.pairs, "two").getStr == "2"
       check t == false
