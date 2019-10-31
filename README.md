@@ -52,14 +52,17 @@ and you can use this to validate tuple field order/names:
 import json
 import foreach
 
+type
+  JsonKeyValue = tuple[key: string; value: JsonNode]
+
 let j = %* {
   "one": 1,
   "two": "2",
 }
 
-# Error: loop variable `pair` isn't a `tuple[key: string, value: JsonNode]`
-foreach pair in j.pairs of tuple[key: string; value: JsonNode]:
-  check pair.key is string
+# Error: loop variable `pair` isn't a `JsonKeyValue`
+foreach pair in j.pairs of JsonKeyValue:
+  assert pair.key is string
 ```
 
 and for convenience, these compile to "normal" `for` loops:
